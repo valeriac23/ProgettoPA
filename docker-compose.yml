@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: pgdb
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: pa2425
+    working_dir: /usr/src
+    restart: always
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/usr/src
+      - /usr/src/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - db
+    command: npm start
+
+volumes:
+  db-data:
